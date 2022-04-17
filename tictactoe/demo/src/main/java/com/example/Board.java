@@ -13,15 +13,29 @@ public class Board extends JPanel {
 
     private Image imgX;
     private Image imgO;
+    private Cell[][] matrix = new Cell[N][M];
 
-    public Board(){
+    public Board(){       
+        this.initMatrix();
+        int k=0;
         addMouseListener(new MouseInputAdapter() {
             public void mousePressed (MouseEvent e){
                 super.mousePressed(e);
                 int x = e.getX();
                 int y = e.getY();
-                System.out.println(e.getX());
-                System.out.println(e.getY());
+                for (int i=0; i<N; i++){
+                    for (int j=0; j<M; j++){
+                        Cell cell = matrix[i][j];
+                        int cXStart = cell.getX();
+                        int cYStart = cell.getY();
+                        
+                        int cXEnd = cXStart + cell.getW();
+                        int cYEnd = cYStart + cell.getH();
+                        if (x >= cXStart && x <= cXEnd && y >= cYStart && y <= cYEnd){
+                            System.out.println("Click vao i: " + i + " j: " + j);
+                        }
+                    }
+                }
             }
         });
         try{
@@ -33,6 +47,15 @@ public class Board extends JPanel {
 
     }
 
+    public void initMatrix(){
+        for (int i=0; i<N; i++){
+            for (int j=0; j<M; j++){
+                Cell cell = new Cell();
+                matrix[i][j] = cell;
+            }
+        }
+    }
+
     public void paint(Graphics g){
         int w = getWidth()/3;
         int h = getHeight()/3;
@@ -41,14 +64,17 @@ public class Board extends JPanel {
         int k = 0;
         for (int i = 0; i < N; i++){
             for (int j = 0; j < M; j++){
-                int x = i*w;
-                int y = j*h;
+                int x = j*w;
+                int y = i*h;
+
+                Cell cell = matrix[i][j];
+                cell.setX(x);
+                cell.setY(y);
+                cell.setW(w);
+                cell.setH(h);
                 Color color = k % 2 == 0 ? Color.BLUE : Color.RED;
                 graphics2d.setColor(color); 
                 graphics2d.fillRect(x, y, w, h);
-                Image img  = k%2 == 0 ? imgX : imgO;
-                graphics2d.drawImage(img, x, y, w, h, this);
-
                 k++;
             }
         }
