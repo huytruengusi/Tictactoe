@@ -14,7 +14,11 @@ public class Board extends JPanel {
     private Image imgX;
     private Image imgO;
     private Cell[][] matrix = new Cell[N][M];
-
+    private String currentPLayer = Cell.O_VALUE;
+    public Board(String currentPLayer){
+        this();
+        this.currentPLayer = currentPLayer;
+    }
     public Board(){       
         this.initMatrix();
         int k=0;
@@ -32,7 +36,11 @@ public class Board extends JPanel {
                         int cXEnd = cXStart + cell.getW();
                         int cYEnd = cYStart + cell.getH();
                         if (x >= cXStart && x <= cXEnd && y >= cYStart && y <= cYEnd){
-                            System.out.println("Click vao i: " + i + " j: " + j);
+                            if (cell.getValue().equals(Cell.EMPTY_VALUE)){
+                                cell.setValue(currentPLayer);
+                                currentPLayer = currentPLayer.equals(Cell.O_VALUE) ? Cell.X_VALUE : Cell.O_VALUE;
+                                repaint();
+                            }
                         }
                     }
                 }
@@ -75,6 +83,13 @@ public class Board extends JPanel {
                 Color color = k % 2 == 0 ? Color.BLUE : Color.RED;
                 graphics2d.setColor(color); 
                 graphics2d.fillRect(x, y, w, h);
+                if (cell.getValue().equals(Cell.X_VALUE)){
+                    Image img =imgX;
+                    graphics2d.drawImage(img, x, y, w, h, this);
+                }else if (cell.getValue().equals(Cell.O_VALUE)){
+                    Image img =imgO;
+                    graphics2d.drawImage(img, x, y, w, h, this);
+                }
                 k++;
             }
         }

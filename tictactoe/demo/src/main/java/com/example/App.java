@@ -2,18 +2,31 @@ package com.example;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.util.Timer;
+import java.util.TimerTask;
 public class App 
 {
+    private static int sec = 0;
     public static void main( String[] args )
     {
+        //Time
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run(){
+                sec++;
+                System.out.println(sec/60 + " : " + sec%60);
+            }
+        }, 1000, 1000);
+        // timer.cancel();
+        // Yes or No Board
+        int choice = JOptionPane.showConfirmDialog(null, "Người chơi O đi trước", "Ai là người đi trước?", JOptionPane.YES_NO_OPTION);
+        Board board = new Board(choice == 1 ? Cell.X_VALUE : Cell.O_VALUE);
         //jPanel
         JPanel jPanel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(jPanel, BoxLayout.Y_AXIS);
         jPanel.setLayout(boxLayout);
         
         //Board
-        Board board = new Board();
         board.setPreferredSize(new Dimension(300,300));
         
         //Flow Layout
@@ -31,7 +44,6 @@ public class App
 
         bottomPanel.add(lblTime);
         bottomPanel.add(btnStart);
-
 
         jPanel.add(board);
         jPanel.add(bottomPanel);
