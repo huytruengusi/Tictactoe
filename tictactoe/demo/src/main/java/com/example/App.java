@@ -14,6 +14,7 @@ public class App
     private static Timer timer = new Timer();
     private static JButton btnStart;
     private static Board board;
+    
     public static void main( String[] args )
     {
         //jPanel

@@ -22,11 +22,13 @@ public class Board extends JPanel {
     private Cell[][] matrix = new Cell[N][M];
     private String currentPLayer = Cell.EMPTY_VALUE;
     private EndgameListener endgameListener;
+
     //Constructor
     public Board(String currentPLayer){
         this();
         this.currentPLayer = currentPLayer;
     }
+
     public Board(){       
         this.initMatrix();
         int k=0;
@@ -86,6 +88,7 @@ public class Board extends JPanel {
         });
         thread.start();
     }
+
     public void initMatrix(){
         for (int i=0; i<N; i++){
             for (int j=0; j<M; j++){
@@ -112,7 +115,7 @@ public class Board extends JPanel {
                 cell.setW(w);
                 cell.setH(h);
                 Color color = k % 2 == 0 ? Color.BLUE : Color.RED;
-                graphics2d.setColor(color); 
+                graphics2d.setColor(color);
                 graphics2d.fillRect(x, y, w, h);
                 if (cell.getValue().equals(Cell.X_VALUE)){
                     Image img =imgX;
@@ -125,6 +128,7 @@ public class Board extends JPanel {
             }
         }
     }
+
     public void setCurrentPLayer(String currentPLayer) {
         this.currentPLayer = currentPLayer;
     }
@@ -138,6 +142,7 @@ public class Board extends JPanel {
         this.setCurrentPLayer(Cell.EMPTY_VALUE);
         repaint();
     }
+
     public int checkWin (String player){
         //Crossover
         if (this.matrix[0][0].getValue().equals(player) && this.matrix[1][1].getValue().equals(player) && this.matrix[2][2].getValue().equals(player))
@@ -177,6 +182,7 @@ public class Board extends JPanel {
         
         return ST_NORMAL;
     }
+    
     private boolean isFull(){
         int number = N * M;
         int k=0; 
