@@ -6,6 +6,10 @@ import java.awt.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 
 public class Board extends JPanel {
     private static final int N = 3;
@@ -27,6 +31,7 @@ public class Board extends JPanel {
                 super.mousePressed(e);
                 int x = e.getX();
                 int y = e.getY();
+                soundClick();
                 for (int i=0; i<N; i++){
                     for (int j=0; j<M; j++){
                         Cell cell = matrix[i][j];
@@ -54,7 +59,21 @@ public class Board extends JPanel {
         }
 
     }
-
+    private synchronized  void soundClick(){
+        Thread thread = new Thread(new Runnable() {
+            public void run (){
+                try{
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource("click.wav"));
+                    clip.open(audioInputStream);
+                    clip.start();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
     public void initMatrix(){
         for (int i=0; i<N; i++){
             for (int j=0; j<M; j++){
