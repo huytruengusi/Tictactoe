@@ -14,11 +14,15 @@ import javax.sound.sampled.Clip;
 public class Board extends JPanel {
     private static final int N = 3;
     private static final int M = 3;
-
+    public static final int ST_DRAW = 0;
+    public static final int ST_WIN = 1;
+    public static final int ST_NORMAL = 2;
     private Image imgX;
     private Image imgO;
     private Cell[][] matrix = new Cell[N][M];
-    private String currentPLayer = Cell.O_VALUE;
+    private String currentPLayer = Cell.EMPTY_VALUE;
+    private EndgameListener endgameListener;
+    //Constructor
     public Board(String currentPLayer){
         this();
         this.currentPLayer = currentPLayer;
@@ -31,6 +35,9 @@ public class Board extends JPanel {
                 super.mousePressed(e);
                 int x = e.getX();
                 int y = e.getY();
+                if (currentPLayer.equals(Cell.EMPTY_VALUE)){
+                    return;
+                }
                 soundClick();
                 for (int i=0; i<N; i++){
                     for (int j=0; j<M; j++){
@@ -43,8 +50,13 @@ public class Board extends JPanel {
                         if (x >= cXStart && x <= cXEnd && y >= cYStart && y <= cYEnd){
                             if (cell.getValue().equals(Cell.EMPTY_VALUE)){
                                 cell.setValue(currentPLayer);
-                                currentPLayer = currentPLayer.equals(Cell.O_VALUE) ? Cell.X_VALUE : Cell.O_VALUE;
                                 repaint();
+                                int result = checkWin(currentPLayer);
+                                if (endgameListener != null)
+                                    endgameListener.end(currentPLayer, result);
+                            
+                                if (result == ST_NORMAL)
+                                    currentPLayer = currentPLayer.equals(Cell.O_VALUE) ? Cell.X_VALUE : Cell.O_VALUE;
                             }
                         }
                     }
@@ -57,8 +69,8 @@ public class Board extends JPanel {
         }catch(Exception e){
             e.printStackTrace();
         }
-
     }
+
     private synchronized  void soundClick(){
         Thread thread = new Thread(new Runnable() {
             public void run (){
@@ -113,5 +125,69 @@ public class Board extends JPanel {
             }
         }
     }
+    public void setCurrentPLayer(String currentPLayer) {
+        this.currentPLayer = currentPLayer;
+    }
+
+    public void setEndgameListener(EndgameListener endgameListener) {
+        this.endgameListener = endgameListener;
+    }
     
+    public void reset(){
+        this.initMatrix();
+        this.setCurrentPLayer(Cell.EMPTY_VALUE);
+        repaint();
+    }
+    public int checkWin (String player){
+        //Crossover
+        if (this.matrix[0][0].getValue().equals(player) && this.matrix[1][1].getValue().equals(player) && this.matrix[2][2].getValue().equals(player))
+            return ST_WIN;
+
+            //Crossup
+        if (this.matrix[2][0].getValue().equals(player) && this.matrix[1][1].getValue().equals(player) && this.matrix[0][2].getValue().equals(player))
+            return ST_WIN;
+        
+            //Row 0
+        if (this.matrix[0][0].getValue().equals(player) && this.matrix[0][1].getValue().equals(player) && this.matrix[0][2].getValue().equals(player))
+            return ST_WIN;
+        
+            //Row 1
+        if (this.matrix[1][0].getValue().equals(player) && this.matrix[1][1].getValue().equals(player) && this.matrix[1][2].getValue().equals(player))
+            return ST_WIN;
+        
+            //Row 2
+        if (this.matrix[2][0].getValue().equals(player) && this.matrix[2][1].getValue().equals(player) && this.matrix[2][2].getValue().equals(player))
+            return ST_WIN;
+        
+            //Columns 0
+        if (this.matrix[0][0].getValue().equals(player) && this.matrix[1][0].getValue().equals(player) && this.matrix[2][0].getValue().equals(player))
+            return ST_WIN;
+        
+            //Columns 1
+        if (this.matrix[0][1].getValue().equals(player) && this.matrix[1][1].getValue().equals(player) && this.matrix[2][1].getValue().equals(player))
+            return ST_WIN;
+        
+            //Columns 2
+        if (this.matrix[0][2].getValue().equals(player) && this.matrix[1][2].getValue().equals(player) && this.matrix[2][2].getValue().equals(player))
+            return ST_WIN;
+        
+            //CheckTable
+        if (this.isFull())
+            return ST_DRAW;
+        
+        return ST_NORMAL;
+    }
+    private boolean isFull(){
+        int number = N * M;
+        int k=0; 
+        for (int i=0; i<N; i++){
+            for (int j=0; j<M; j++){
+                Cell cell = matrix[i][j];
+                if(!cell.getValue().equals(Cell.EMPTY_VALUE)){
+                    k++;
+                }
+            }
+        }
+        return k==N*M;
+    }
 }
